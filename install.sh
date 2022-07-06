@@ -5,18 +5,30 @@
 #
 
 if [ ! -f /usr/local/openresty/bin/openresty ]; then
-# add openresty latest
-sudo apt-get -y install --no-install-recommends wget gnupg ca-certificates
-wget -O - https://openresty.org/package/pubkey.gpg | sudo apt-key add -
-echo "deb http://openresty.org/package/ubuntu $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/openresty.list
+  # add openresty latest
+  sudo apt-get -y install --no-install-recommends wget gnupg ca-certificates
+  wget -O - https://openresty.org/package/pubkey.gpg | sudo apt-key add -
+  echo "deb http://openresty.org/package/ubuntu $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/openresty.list
 fi
 
 if [ -z "$(dpkg -l | grep -E '^ii\s+postgresql\s')" ]; then
-# add postgresql latest
-sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
-wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+  # add postgresql latest
+  sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+  wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 fi
 sudo apt-get -qq update
+
+if [ -z $(which nodejs) ]; then 
+  apt install -y nodejs
+else
+  echo 'nodejs already installed'
+fi
+
+if [ -z $(which yarn) ]; then 
+  npm install -g yarn
+else
+  echo 'yarn already installed'
+fi
 
 # install openresty
 if [ ! -f /usr/local/openresty/bin/openresty ]; then
@@ -24,11 +36,13 @@ if [ ! -f /usr/local/openresty/bin/openresty ]; then
   service openresty stop
   pgrep -x nginx && killall nginx
   OPENRESTY_PATH='/usr/local/openresty/bin:/usr/local/openresty/nginx/sbin:/usr/local/openresty/luajit/bin'
-  # export PATH=$OPENRESTY_PATH:$PATH
+  export PATH=$OPENRESTY_PATH:$PATH
   BASH_RC=~/.bashrc
   echo "openresty installed"
   if [ ! -z $(grep $OPENRESTY_PATH $BASH_RC) ]; then
     echo "export PATH=$OPENRESTY_PATH:\$PATH" >> ~/.bashrc;
+  else
+    echo "openresty path already written to bashrc";
   fi
   # mkdir lua_modules
   opm get ledgetech/lua-resty-http
