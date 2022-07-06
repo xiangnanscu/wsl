@@ -19,7 +19,8 @@ fi
 sudo apt-get -qq update
 
 if [ -z $(which nodejs) ]; then 
-  apt install -y nodejs
+  curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
+  sudo apt-get install -y nodejs
 else
   echo 'nodejs already installed'
 fi
