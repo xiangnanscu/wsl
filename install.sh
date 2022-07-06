@@ -3,33 +3,53 @@
 #
 # Note: Need to run this as root
 #
+install() {
+  if [ -z $(which $1) ]; then
+    sudo apt-get install -y $1
+  else
+    echo "$1 already installed"
+  fi
+}
+npm_install() {
+  if [ -z $(which $1) ]; then
+    sudo npm install -g $1
+  else
+    echo "$1 already installed"
+  fi
+}
 
 if [ ! -f /usr/local/openresty/bin/openresty ]; then
   # add openresty latest
   sudo apt-get -y install --no-install-recommends wget gnupg ca-certificates
   wget -O - https://openresty.org/package/pubkey.gpg | sudo apt-key add -
   echo "deb http://openresty.org/package/ubuntu $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/openresty.list
+else
+  echo "openresty already installed"
 fi
 
 if [ -z "$(dpkg -l | grep -E '^ii\s+postgresql\s')" ]; then
   # add postgresql latest
   sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
   wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+else
+  echo "postgresql already installed"
 fi
+
 sudo apt-get -q update
+
+install unzip
+install make
+install gcc
 
 if [ -z $(which node) ]; then
   curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
   sudo apt-get install -y nodejs
 else
-  echo 'nodejs already installed'
+  echo 'nodejs 16 already installed'
 fi
 
-if [ -z $(which yarn) ]; then
-  npm install -g yarn
-else
-  echo 'yarn already installed'
-fi
+npm_install yarn
+npm_install env-cmd
 
 # install openresty
 OPENRESTY_PATH='/usr/local/openresty/bin:/usr/local/openresty/nginx/sbin:/usr/local/openresty/luajit/bin'
@@ -44,6 +64,7 @@ if [ ! -f /usr/local/openresty/bin/openresty ]; then
     echo "openresty path already written to bashrc";
   else
     echo "export PATH=$OPENRESTY_PATH:\$PATH" >> ~/.bashrc;
+    echo "add PATH to ${BASH_RC}"
   fi
   # mkdir lua_modules
   opm get ledgetech/lua-resty-http
@@ -58,11 +79,7 @@ else
   echo "openresty already installed"
 fi
 
-if [ ! -f /usr/local/bin/env-cmd ]; then
-  yarn global add env-cmd
-else
-  echo "env-cmd already installed"
-fi
+
 
 if [ -z "$(dpkg -l | grep -E '^ii\s+postgresql\s')" ]; then
   [ -z $PG_PASSWORD ] && echo "Plase set PG_PASSWORD" && exit 1
@@ -95,12 +112,18 @@ else
   echo "postgresql already installed"
 fi
 
+LUAROCKS_VER='3.8.0'
+LUAROCKS_FD=luarocks-${LUAROCKS_VER}
+LUAROCKS_GZ=${LUAROCKS_FD}.tar.gz
 if [ ! -f /usr/local/openresty/luajit/bin/luarocks ]; then
-  LUAROCKS_VER='3.8.0'
   cd /tmp
-  wget https://luarocks.org/releases/luarocks-${LUAROCKS_VER}.tar.gz
-  tar zxpf luarocks-${LUAROCKS_VER}.tar.gz
-  cd luarocks-${LUAROCKS_VER}
+  if [ ! -f $LUAROCKS_GZ ]; then
+    wget https://luarocks.org/releases/$LUAROCKS_GZ
+  fi
+  if [ ! -d $LUAROCKS_FD ]; then
+    tar zxpf $LUAROCKS_GZ
+  fi
+  cd $LUAROCKS_FD
   ./configure --prefix=/usr/local/openresty/luajit \
       --with-lua=/usr/local/openresty/luajit/ \
       --lua-suffix=jit \
