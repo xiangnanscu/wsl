@@ -3,9 +3,6 @@
 #
 # Note: Need to run this as root
 #
-OPENRESTY_PATH='/usr/local/openresty/bin:/usr/local/openresty/nginx/sbin:/usr/local/openresty/luajit/bin'
-export PATH=$OPENRESTY_PATH:$PATH
-BASH_RC=~/.bashrc
 
 if [ ! -f /usr/local/openresty/bin/openresty ]; then
   # add openresty latest
@@ -21,7 +18,7 @@ if [ -z "$(dpkg -l | grep -E '^ii\s+postgresql\s')" ]; then
 fi
 sudo apt-get -q update
 
-if [ -z $(which nodejs) ]; then
+if [ -z $(which node) ]; then
   curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
   sudo apt-get install -y nodejs
 else
@@ -35,15 +32,18 @@ else
 fi
 
 # install openresty
+OPENRESTY_PATH='/usr/local/openresty/bin:/usr/local/openresty/nginx/sbin:/usr/local/openresty/luajit/bin'
+export PATH=$OPENRESTY_PATH:$PATH
+BASH_RC=~/.bashrc
 if [ ! -f /usr/local/openresty/bin/openresty ]; then
-  sudo apt-get -y -qq install openresty
+  sudo apt-get -y -q install openresty
   service openresty stop
   pgrep -x nginx && killall nginx
   echo "openresty installed"
-  if [ -z $(grep $OPENRESTY_PATH $BASH_RC) ]; then
-    echo "export PATH=$OPENRESTY_PATH:\$PATH" >> ~/.bashrc;
-  else
+  if [ ! -z $(grep $OPENRESTY_PATH $BASH_RC) ]; then
     echo "openresty path already written to bashrc";
+  else
+    echo "export PATH=$OPENRESTY_PATH:\$PATH" >> ~/.bashrc;
   fi
   # mkdir lua_modules
   opm get ledgetech/lua-resty-http
