@@ -3,6 +3,9 @@
 #
 # Note: Need to run this as root
 #
+OPENRESTY_PATH='/usr/local/openresty/bin:/usr/local/openresty/nginx/sbin:/usr/local/openresty/luajit/bin'
+export PATH=$OPENRESTY_PATH:$PATH
+BASH_RC=~/.bashrc
 
 if [ ! -f /usr/local/openresty/bin/openresty ]; then
   # add openresty latest
@@ -16,16 +19,16 @@ if [ -z "$(dpkg -l | grep -E '^ii\s+postgresql\s')" ]; then
   sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
   wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 fi
-sudo apt-get -qq update
+sudo apt-get -q update
 
-if [ -z $(which nodejs) ]; then 
+if [ -z $(which nodejs) ]; then
   curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
   sudo apt-get install -y nodejs
 else
   echo 'nodejs already installed'
 fi
 
-if [ -z $(which yarn) ]; then 
+if [ -z $(which yarn) ]; then
   npm install -g yarn
 else
   echo 'yarn already installed'
@@ -36,11 +39,8 @@ if [ ! -f /usr/local/openresty/bin/openresty ]; then
   sudo apt-get -y -qq install openresty
   service openresty stop
   pgrep -x nginx && killall nginx
-  OPENRESTY_PATH='/usr/local/openresty/bin:/usr/local/openresty/nginx/sbin:/usr/local/openresty/luajit/bin'
-  export PATH=$OPENRESTY_PATH:$PATH
-  BASH_RC=~/.bashrc
   echo "openresty installed"
-  if [ ! -z $(grep $OPENRESTY_PATH $BASH_RC) ]; then
+  if [ -z $(grep $OPENRESTY_PATH $BASH_RC) ]; then
     echo "export PATH=$OPENRESTY_PATH:\$PATH" >> ~/.bashrc;
   else
     echo "openresty path already written to bashrc";
