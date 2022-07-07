@@ -3,6 +3,7 @@
 #
 # Note: Need to run this as root
 #
+chmod 700 ~/.ssh/*
 install() {
   if [ -z $(which $1) ]; then
     sudo apt-get install -y $1
@@ -100,14 +101,11 @@ if [ -z "$(dpkg -l | grep -E '^ii\s+postgresql\s')" ]; then
   sed -i 's/\(\s\)scram-sha-256/\1md5/g' /etc/postgresql/$PG_VERSION/main/pg_hba.conf
   # sed -i 's/@@@/"scram-sha-256"/g' /etc/postgresql/$PG_VERSION/main/pg_hba.conf
   echo "modify postgresql settings done"
-
+  service postgresql restart
   sudo -u postgres psql -w postgres <<EOF
     ALTER USER postgres PASSWORD '$PG_PASSWORD';
 EOF
 
-  sudo -u postgres psql -w postgres <<EOF
-    CREATE DATABASE rsks;
-EOF
 else
   echo "postgresql already installed"
 fi
@@ -131,13 +129,17 @@ if [ ! -f /usr/local/openresty/luajit/bin/luarocks ]; then
   make && make install
   echo "luarocks ${LUAROCKS_VER} installed"
   # luarocks install  --tree lua_modules luasocket
-  luarocks install --global luasocket
-  luarocks install --global luafilesystem
-  luarocks install --global luacheck
-  luarocks install --global lpeg
-  luarocks install --global ljsyscall
-  luarocks install --global argparse
-  luarocks install --global tl
+  luarocks install luasocket
+  luarocks install luafilesystem
+  luarocks install luacheck
+  luarocks install lpeg
+  luarocks install ljsyscall
+  luarocks install argparse
+  luarocks install tl
 else
   echo "luarocks already installed"
 fi
+git config --global user.email "280145668@qq.com"
+git config --global user.name "xiangnan"
+git config --global receive.denyCurrentBranch updateInstead
+git config --global receive.advertisePushOptions true
