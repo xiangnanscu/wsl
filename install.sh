@@ -51,6 +51,7 @@ fi
 
 npm_install yarn
 npm_install env-cmd
+npm_install npm-check-updates
 
 # install openresty
 OPENRESTY_PATH='/usr/local/openresty/bin:/usr/local/openresty/nginx/sbin:/usr/local/openresty/luajit/bin'
