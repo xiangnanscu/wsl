@@ -1,0 +1,48 @@
+{
+  "name": "wsl",
+  "version": "0.10.0",
+  "keywords": [
+    "wsl"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "boot": "./init.sh && yarn nginx",
+    "nginx": "./openresty/nginx/sbin/nginx -p $PWD/ -c conf/nginx.conf",
+    "nginx:stop": "yarn nginx -s stop",
+    "nginx:re": "yarn nginx -s reload",
+    "prerelease": "npm run u && npm --no-git-tag-version version minor",
+    "release": "push_option=release npm run push",
+    "push": "git add . && git commit -am \"${msg:-push}\" && git push --push-option=${push_option:-nothing}",
+    "replace": "find .  -type d \\( -name .git -o -name node_modules \\) -prune -o  -type f  -exec  sed -i s/wsl/wsl/g {} \\;",
+    "test": "yarn node --experimental-vm-modules $(yarn bin jest)"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xiangnanscu/wsl.git"
+  },
+  "author": "Nan Xiang",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/xiangnanscu/wsl/issues"
+  },
+  "jest": {
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.m?[jt]sx?$",
+    "transform": {}
+  },
+  "homepage": "https://github.com/xiangnanscu/wsl#readme",
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^3.0.1",
+    "env-cmd": "^10.1.0",
+    "jest": "^28.1.3",
+    "vite": "^3.0.2",
+    "vue": "^3.2.37"
+  },
+  "dependencies": {
+    "@xiangnanscu/field": "^0.8.0",
+    "@xiangnanscu/modelsql": "^0.15.0",
+    "@xiangnanscu/sql": "^0.6.0",
+    "postgres": "^3.2.4"
+  }
+}
