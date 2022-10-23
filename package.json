@@ -27,22 +27,11 @@
   "bugs": {
     "url": "https://github.com/xiangnanscu/wsl/issues"
   },
-  "jest": {
-    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.m?[jt]sx?$",
-    "transform": {}
-  },
   "homepage": "https://github.com/xiangnanscu/wsl#readme",
   "devDependencies": {
-    "@vitejs/plugin-vue": "^3.0.1",
-    "env-cmd": "^10.1.0",
-    "jest": "^28.1.3",
-    "vite": "^3.0.2",
-    "vue": "^3.2.37"
+
   },
   "dependencies": {
-    "@xiangnanscu/field": "^0.8.0",
-    "@xiangnanscu/modelsql": "^0.15.0",
-    "@xiangnanscu/sql": "^0.6.0",
-    "postgres": "^3.2.4"
+
   }
 }
