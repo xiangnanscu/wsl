@@ -34,13 +34,22 @@ download_build_openresty() {
   make -j4 && make install
 }
 
+UBUNTU_VER=$(lsb_release -cs)
 # openresty
 sudo apt-get -y install --no-install-recommends wget gnupg ca-certificates
 if [ ! -f /usr/share/keyrings/openresty.gpg ]; then
-  wget -O - https://openresty.org/package/pubkey.gpg | sudo gpg --dearmor -o /usr/share/keyrings/openresty.gpg
+  if [ $UBUNTU_VER = jammy ]; then
+    wget -O - https://openresty.org/package/pubkey.gpg | sudo gpg --dearmor -o /usr/share/keyrings/openresty.gpg
+  else
+    wget -O - https://openresty.org/package/pubkey.gpg | sudo apt-key add -
+  fi
 fi
 if [ ! -f /etc/apt/sources.list.d/openresty.list ]; then
-  echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/openresty.gpg] http://openresty.org/package/ubuntu $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/openresty.list > /dev/null
+  if [ $UBUNTU_VER = jammy ]; then
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/openresty.gpg] http://openresty.org/package/ubuntu $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/openresty.list > /dev/null
+  else
+    echo "deb http://openresty.org/package/ubuntu $(lsb_release -sc) main"  | sudo tee /etc/apt/sources.list.d/openresty.list
+  fi
 fi
 
 
