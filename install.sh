@@ -47,6 +47,23 @@ if [ -z $(which gh) ]; then
   && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
 fi
 
+sudo apt-get -q update
+
+install nodejs
+install unzip
+install make
+install gcc
+install libpcre3-dev
+install libssl-dev
+install perl
+install build-essential
+install curl
+install zlib1g
+install zlib1g-dev
+
+npm_global_install yarn
+npm_global_install env-cmd
+
 # install openresty
 PROJECT_DIR=$PWD
 OPENRESTY_VER=1.21.4.1
@@ -115,16 +132,6 @@ if [ ! -f ${OPENRESTY_DIR}/openresty/luajit/bin/luarocks ]; then
 else
   echo "luarocks already installed"
 fi
-
-sudo apt-get -q update
-
-install nodejs
-install unzip
-install make
-install gcc
-
-npm_global_install yarn
-npm_global_install env-cmd
 
 if [ -z "$(dpkg -l | grep -E '^ii\s+postgresql\s')" ]; then
   if [ -z $PG_PASSWORD ]; then
