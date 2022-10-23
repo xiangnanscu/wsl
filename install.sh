@@ -20,6 +20,29 @@ npm_global_install() {
     echo "$1 already installed"
   fi
 }
+download_build_openresty() {
+  cd /tmp
+  if [ ! -f openresty-$1.tar.gz ]; then
+    wget https://openresty.org/download/openresty-$1.tar.gz
+  fi
+  if [ ! -d openresty-$1/ ]; then
+    tar -xvf openresty-$1.tar.gz
+  fi
+  cd openresty-$1/
+  #  --with-http_geoip_module
+  ./configure --prefix=$2/openresty --with-pcre-jit -j8
+  make -j4 && make install
+}
+
+# openresty
+sudo apt-get -y install --no-install-recommends wget gnupg ca-certificates
+if [ ! -f /usr/share/keyrings/openresty.gpg ]; then
+  wget -O - https://openresty.org/package/pubkey.gpg | sudo gpg --dearmor -o /usr/share/keyrings/openresty.gpg
+fi
+if [ ! -f /etc/apt/sources.list.d/openresty.list ]; then
+  echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/openresty.gpg] http://openresty.org/package/ubuntu $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/openresty.list > /dev/null
+fi
+
 
 # postgresql
 if [ -z "$(dpkg -l | grep -E '^ii\s+postgresql\s')" ]; then
@@ -78,17 +101,8 @@ else
   echo "add $OPENRESTY_PATH to ${BASH_RC}"
 fi
 if [ ! -f ${OPENRESTY_DIR}/openresty/bin/openresty ]; then
-  cd /tmp
-  if [ ! -f openresty-${OPENRESTY_VER}.tar.gz ]; then
-    wget https://openresty.org/download/openresty-${OPENRESTY_VER}.tar.gz
-  fi
-  if [ ! -d openresty-${OPENRESTY_VER}/ ]; then
-    tar -xvf openresty-${OPENRESTY_VER}.tar.gz
-  fi
-  cd openresty-${OPENRESTY_VER}/
-  #  --with-http_geoip_module
-  ./configure --prefix=${OPENRESTY_DIR}/openresty --with-pcre-jit -j8
-  make -j4 && make install
+  # download_build_openresty $OPENRESTY_VER $OPENRESTY_DIR
+  sudo apt-get -y install openresty
   # service openresty stop
   # pgrep -x nginx && killall nginx
   opm get ledgetech/lua-resty-http
