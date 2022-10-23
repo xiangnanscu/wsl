@@ -175,9 +175,12 @@ install_postgresql() {
     sudo sed -i 's/shared_buffers = 128MB/shared_buffers = 256MB/g' /etc/postgresql/$PG_VERSION/main/postgresql.conf
     sudo sed -i 's/#password_encryption = scram-sha-256/password_encryption = md5/g' /etc/postgresql/$PG_VERSION/main/postgresql.conf
     sudo sed -i 's/\(\s\)scram-sha-256/\1md5/g' /etc/postgresql/$PG_VERSION/main/pg_hba.conf
+    echo "pg password: $PG_PASSWORD before restart"
     sudo service postgresql restart
     if [ -z $PG_PASSWORD ]; then
       read -p "please provide postgresql password for user postgres:" PG_PASSWORD
+    else
+      echo "pg password is provided: $PG_PASSWORD"
     fi
     sudo -u postgres psql -w postgres <<EOF
       ALTER USER postgres PASSWORD '$PG_PASSWORD';
