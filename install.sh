@@ -34,6 +34,10 @@ download_build_openresty() {
   make -j4 && make install
 }
 
+sudo sed -i 's/#ClientAliveInterval 0/ClientAliveInterval 60/g' /etc/ssh/sshd_config
+sudo sed -i 's/#ClientAliveCountMax 3/ClientAliveCountMax 60/g' /etc/ssh/sshd_config
+systemctl restart ssh
+
 UBUNTU_VER=$(lsb_release -cs)
 # openresty
 sudo apt-get -y install --no-install-recommends wget gnupg ca-certificates
