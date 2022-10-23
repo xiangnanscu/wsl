@@ -5,6 +5,7 @@
     "wsl"
   ],
   "scripts": {
+    "create": "wget https://gitee.com/xiangnanscu/wsl/raw/master/install.sh && chmod a+x install.sh && sudo ./install.sh 2>&1  | tee install.log",
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
