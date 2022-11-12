@@ -136,6 +136,7 @@ install_lua_packages() {
   if [ ! -z $(which opm) ]; then
     opm get ledgetech/lua-resty-http
     opm get bungle/lua-resty-template
+    opm get bungle/lua-resty-prettycjson
     opm get fffonion/lua-resty-openssl
     opm get xiangnanscu/pgmoon
     opm get xiangnanscu/lua-resty-inspect
