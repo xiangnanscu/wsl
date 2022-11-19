@@ -145,10 +145,9 @@ install_lua_packages() {
     # luarocks install  --tree lua_modules luasocket
     cd $PROJECT_DIR
     luarocks install luasocket
-    luarocks install luafilesystem
+    luarocks install ljsyscall
     luarocks install luacheck
     luarocks install lpeg
-    luarocks install ljsyscall
     luarocks install argparse
     luarocks install tl
   fi
@@ -219,6 +218,12 @@ config_git() {
   git config --global receive.advertisePushOptions true
 }
 
+prepare_django_pg() {
+  sudo apt install python-is-python3
+  sudo apt-get install postgresql postgresql-contrib -y
+  sudo apt-get install libpq-dev python3-dev -y
+  pip3 install psycopg2 -i https://pypi.tuna.tsinghua.edu.cn/simple
+}
 install_base
 install_nodejs
 install_openresty
@@ -228,7 +233,6 @@ install_dotnet
 install_gh
 install_lua_packages
 config_git
-
 
 
 
