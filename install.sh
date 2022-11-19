@@ -14,6 +14,7 @@ OPENRESTY_PATH="${OPENRESTY_DIR}/openresty/bin:${OPENRESTY_DIR}/openresty/nginx/
 PATH="$OPENRESTY_PATH:$PATH"
 BASH_RC=~/.profile
 
+echo "registry=https://registry.npmmirror.com/" > ~/.npmrc
 sudo sed -i 's/#ClientAliveInterval 0/ClientAliveInterval 60/g' /etc/ssh/sshd_config
 sudo sed -i 's/#ClientAliveCountMax 3/ClientAliveCountMax 60/g' /etc/ssh/sshd_config
 sudo /etc/init.d/ssh reload
@@ -228,10 +229,10 @@ install_nodejs
 install_openresty
 install_luarocks
 install_postgresql
-install_dotnet
 install_gh
 install_lua_packages
 config_git
+# install_dotnet
 
 
 
